@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# VS Code settings (optional to ignore editor settings)
+.vscode/
+
+# Optional: Multer uploads folder (if files are stored locally)
+uploads/
+
+# Coverage results (if using testing tools like Jest later)
+coverage/
+
+# Build artifacts (if you use build steps or TypeScript later)
+dist/
+build/
+
+# System temp files
+*.swp
+*.swo
+*.tmp
+
+# macOS Quick Look thumbnails
+._*
+
+# lock files (optional, if using npm or yarn exclusively)
+package-lock.json
+# yarn.lock
