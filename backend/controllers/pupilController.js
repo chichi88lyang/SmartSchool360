@@ -1,6 +1,6 @@
 const Pupil = require("../models/Pupil");
 
-// Register a new pupil
+// ✅ Register a new pupil
 exports.registerPupil = async (req, res) => {
   const { name, gender, grade } = req.body;
 
@@ -12,7 +12,7 @@ exports.registerPupil = async (req, res) => {
   }
 };
 
-// Mark attendance for a pupil
+// ✅ Mark attendance for a pupil
 exports.markAttendance = async (req, res) => {
   const { id } = req.params;
   const { date, status } = req.body;
@@ -30,7 +30,7 @@ exports.markAttendance = async (req, res) => {
   }
 };
 
-// Get attendance summary
+// ✅ Get attendance summary for a pupil
 exports.getAttendanceSummary = async (req, res) => {
   const { id } = req.params;
 
@@ -40,8 +40,8 @@ exports.getAttendanceSummary = async (req, res) => {
 
     const summary = {
       total: pupil.attendance.length,
-      present: pupil.attendance.filter(a => a.status === "present").length,
-      absent: pupil.attendance.filter(a => a.status === "absent").length,
+      present: pupil.attendance.filter((a) => a.status === "present").length,
+      absent: pupil.attendance.filter((a) => a.status === "absent").length,
     };
 
     res.json({ name: pupil.name, grade: pupil.grade, summary });
