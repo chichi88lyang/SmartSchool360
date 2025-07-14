@@ -1,18 +1,18 @@
-const TeacherDocument = require("../models/TeacherDocument");
+const teacherDocument = require("../models/teacherDocument");
 
 // ✅ Create or Update Teacher Document Checklist
 exports.updateChecklist = async (req, res) => {
   const { year, term, updates } = req.body;
 
   try {
-    let checklist = await TeacherDocument.findOne({
+    let checklist = await teacherDocument.findOne({
       teacher: req.user.id,
       year,
       term,
     });
 
     if (!checklist) {
-      checklist = new TeacherDocument({
+      checklist = new teacherDocument({
         teacher: req.user.id,
         year,
         term,
@@ -35,7 +35,7 @@ exports.getChecklistSummary = async (req, res) => {
   const { year, term } = req.query;
 
   try {
-    const checklist = await TeacherDocument.findOne({
+    const checklist = await teacherDocument.findOne({
       teacher: req.user.id,
       year,
       term,
@@ -44,8 +44,7 @@ exports.getChecklistSummary = async (req, res) => {
     if (!checklist) {
       return res.status(404).json({ message: "Checklist not found" });
     }
-
-    // ✅ Generate Auto-Comment
+    
     const totalChecks = [
       checklist.syllabus,
       checklist.workPlan,
@@ -87,7 +86,7 @@ exports.printChecklist = async (req, res) => {
   const { year, term } = req.query;
 
   try {
-    const checklist = await TeacherDocument.findOne({
+    const checklist = await teacherDocument.findOne({
       teacher: req.user.id,
       year,
       term,

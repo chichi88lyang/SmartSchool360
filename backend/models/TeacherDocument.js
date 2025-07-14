@@ -1,34 +1,31 @@
 const mongoose = require("mongoose");
 
 const teacherDocumentSchema = new mongoose.Schema({
-  teacher: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-
-  year: { type: Number, required: true },
-  term: { type: String, enum: ["Term 1", "Term 2", "Term 3"], required: true },
-
-  syllabus: { type: Boolean, default: false },
-  workPlan: { type: Boolean, default: false },
-  schemesOfWork: { type: Boolean, default: false },
-  timetable: { type: Boolean, default: false },
-
-  lessonPlansPrepared: { type: Number, default: 0 },
-  totalExpectedLessons: { type: Number, default: 0 },
-
-  recordOfWorkSubmittedWeeks: { type: Number, default: 0 },
-  homeworkGiven: { type: Number, default: 0 },
-
-  testsGiven: {
-    week5: { type: Boolean, default: false },
-    week10: { type: Boolean, default: false },
-    endOfTerm: { type: Boolean, default: false },
+  teacher: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Teacher",
+    required: true,
   },
-
-  markingKeysSubmitted: { type: Boolean, default: false },
-  progressChartUpdated: { type: Boolean, default: false },
-  resultAnalysisSubmitted: { type: Boolean, default: false },
-  observationInstrumentsSubmitted: { type: Boolean, default: false },
-
+  year: String,
+  term: String,
+  syllabus: Boolean,
+  workPlan: Boolean,
+  schemesOfWork: Boolean,
+  timetable: Boolean,
+  lessonPlansPrepared: Number,
+  totalExpectedLessons: Number,
+  recordOfWorkSubmittedWeeks: [Number],
+  homeworkGiven: Number,
+  testsGiven: {
+    week5: Boolean,
+    week10: Boolean,
+    endOfTerm: Boolean,
+  },
+  markingKeysSubmitted: Boolean,
+  progressChartUpdated: Boolean,
+  resultAnalysisSubmitted: Boolean,
+  observationInstrumentsSubmitted: Boolean,
   lastUpdated: { type: Date, default: Date.now },
-}, { timestamps: true });
+});
 
-module.exports = mongoose.model("TeacherDocument", teacherDocumentSchema);
+module.exports = mongoose.model("teacherDocument", teacherDocumentSchema);

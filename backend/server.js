@@ -15,11 +15,19 @@ app.use(express.json());
 // Static folder for file access (optional)
 app.use('/uploads', express.static('uploads'));
 
-// Routes
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/attendance", require("./routes/attendanceRoutes"));
-app.use("/api/pupils", require("./routes/pupilRoutes"));
-app.use("/api/teacher-docs", require("./routes/teacherDocumentRoutes"));
+// ✅ Route Files
+const authRoutes = require("./routes/authRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes");
+const pupilRoutes = require("./routes/pupilRoutes");
+const teacherDocumentRoutes = require("./routes/teacherDocumentRoutes");
+const pupilAttendanceRoutes = require("./routes/pupilAttendanceRoutes");
+
+// ✅ Mount Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/pupils", pupilRoutes);
+app.use("/api/pupils", pupilAttendanceRoutes); // share base path with pupilRoutes
+app.use("/api/teacher-docs", teacherDocumentRoutes); // teacher documents routes mounted here
 
 // Test route
 app.get("/", (req, res) => res.send("API running"));
