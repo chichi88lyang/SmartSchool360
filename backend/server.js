@@ -16,6 +16,7 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 // ✅ Route Files
+const pupilResultRoutes = require("./routes/pupilResultRoutes");
 const authRoutes = require("./routes/authRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const pupilRoutes = require("./routes/pupilRoutes");
@@ -28,6 +29,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/pupils", pupilRoutes);
 app.use("/api/pupils", pupilAttendanceRoutes); // share base path with pupilRoutes
 app.use("/api/teacher-docs", teacherDocumentRoutes); // teacher documents routes mounted here
+app.use("/api/pupilresults", pupilResultRoutes);
 
 // Test route
 app.get("/", (req, res) => res.send("API running"));
