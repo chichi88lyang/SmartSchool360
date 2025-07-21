@@ -1,13 +1,11 @@
 const express = require("express");
 const { markAttendance, getAttendanceSummary } = require("../controllers/pupilAttendanceController");
-const auth = require("../middleware/auth");
-
+const auth = require("../middleware/auth");  // Assuming you use auth middleware
 const router = express.Router();
-
-// ✅ POST: Mark Attendance (Protected)
+// ✅ GET: Attendance Summary (Protected)
 router.post("/:id/attendance", auth(), markAttendance);
 
-// ✅ GET: Attendance Summary (Protected)
+
 router.get("/attendance-summary", auth(), getAttendanceSummary);
 
 module.exports = router;

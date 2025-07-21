@@ -1,11 +1,7 @@
 const mongoose = require("mongoose");
 
 const teacherDocumentSchema = new mongoose.Schema({
-  teacher: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",   // ✅ Change made here: "User" instead of "Teacher"
-    required: true,
-  },
+  teacher: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   year: String,
   term: String,
   syllabus: Boolean,
@@ -28,4 +24,4 @@ const teacherDocumentSchema = new mongoose.Schema({
   lastUpdated: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("teacherDocument", teacherDocumentSchema);
+module.exports = mongoose.model("TeacherDocument", teacherDocumentSchema);

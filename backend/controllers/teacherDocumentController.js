@@ -1,129 +1,54 @@
-const teacherDocument = require("../models/teacherDocument");
+const TeacherDocument = require("../models/TeacherDocument");
+const User = require("../models/User");
 
-// ✅ Create or Update Teacher Document Checklist
-exports.updateChecklist = async (req, res) => {
-  const { year, term, updates } = req.body;
-
-  try {
-    let checklist = await teacherDocument.findOne({
-      teacher: req.user.id,
-      year,
-      term,
-    });
-
-    if (!checklist) {
-      checklist = new teacherDocument({
-        teacher: req.user.id,
-        year,
-        term,
-      });
-    }
-
-    Object.assign(checklist, updates);
-    checklist.lastUpdated = new Date();
-
-    await checklist.save();
-
-    res.status(200).json({ message: "Checklist updated", checklist });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// ✅ Get Checklist + Auto-Generated Comment
+// ✅ Get Checklist Summary for all teachers with auto-comments
 exports.getChecklistSummary = async (req, res) => {
-  const { year, term } = req.query;
+  const { year, term } = req.query;
 
-  try {
-    const checklist = await teacherDocument.findOne({
-      teacher: req.user.id,
-      year,
-      term,
-    }).populate("teacher", "name email");
+  try {
+    const records = await TeacherDocument.find({ year, term }).populate("teacher", "name email grade");
 
-    if (!checklist) {
-      return res.status(404).json({ message: "Checklist not found" });
-    }
-    
-    const totalChecks = [
-      checklist.syllabus,
-      checklist.workPlan,
-      checklist.schemesOfWork,
-      checklist.timetable,
-      checklist.markingKeysSubmitted,
-      checklist.progressChartUpdated,
-      checklist.resultAnalysisSubmitted,
-      checklist.observationInstrumentsSubmitted,
-      checklist.testsGiven?.week5,
-      checklist.testsGiven?.week10,
-      checklist.testsGiven?.endOfTerm,
-    ];
+    if (!records.length) {
+      return res.status(404).json({ message: "No records found for this term/year." });
+    }
 
-    const completed = totalChecks.filter(Boolean).length;
-    const score = (completed / totalChecks.length) * 100;
+    const summary = records.map(doc => {
+      let comment = "Satisfactory";
 
-    let autoComment = "";
+      if (!doc.syllabus || !doc.workPlan || !doc.schemesOfWork) {
+        comment = "Key documents missing";
+      } else if (doc.lessonPlansPrepared < (doc.totalExpectedLessons * 0.75)) {
+        comment = "Lesson plans below expected";
+      } else if (!doc.resultAnalysisSubmitted) {
+        comment = "Result analysis not submitted";
+      }
 
-    if (score >= 80) {
-      autoComment = "Excellent compliance with documentation requirements.";
-    } else if (score >= 50) {
-      autoComment = "Good progress. Please ensure remaining documents are submitted on time.";
-    } else {
-      autoComment = "Documentation compliance is below expectations. Immediate improvement needed.";
-    }
+      return {
+        teacher: doc.teacher.name,
+        email: doc.teacher.email,
+        grade: doc.teacher.grade,
+        term: doc.term,
+        year: doc.year,
+        syllabus: doc.syllabus,
+        workPlan: doc.workPlan,
+        schemesOfWork: doc.schemesOfWork,
+        lessonPlansPrepared: doc.lessonPlansPrepared,
+        totalExpectedLessons: doc.totalExpectedLessons,
+        recordOfWorkSubmittedWeeks: doc.recordOfWorkSubmittedWeeks,
+        homeworkGiven: doc.homeworkGiven,
+        testsGiven: doc.testsGiven,
+        markingKeysSubmitted: doc.markingKeysSubmitted,
+        progressChartUpdated: doc.progressChartUpdated,
+        resultAnalysisSubmitted: doc.resultAnalysisSubmitted,
+        observationInstrumentsSubmitted: doc.observationInstrumentsSubmitted,
+        lastUpdated: doc.lastUpdated,
+        comment
+      };
+    });
 
-    res.status(200).json({
-      checklist,
-      autoComment,
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+    res.status(200).json({ term, year, summary });
 
-// ✅ Generate Printable Summary for Teacher Documents
-exports.printChecklist = async (req, res) => {
-  const { year, term } = req.query;
-
-  try {
-    const checklist = await teacherDocument.findOne({
-      teacher: req.user.id,
-      year,
-      term,
-    }).populate("teacher", "name email");
-
-    if (!checklist) {
-      return res.status(404).json({ message: "Checklist not found" });
-    }
-
-    const report = {
-      Teacher: checklist.teacher.name,
-      Email: checklist.teacher.email,
-      Year: checklist.year,
-      Term: checklist.term,
-      Documents: {
-        Syllabus: checklist.syllabus ? "✅ Submitted" : "❌ Missing",
-        WorkPlan: checklist.workPlan ? "✅ Submitted" : "❌ Missing",
-        SchemesOfWork: checklist.schemesOfWork ? "✅ Submitted" : "❌ Missing",
-        Timetable: checklist.timetable ? "✅ Ready" : "❌ Missing",
-        LessonPlansPrepared: `${checklist.lessonPlansPrepared || 0} of ${checklist.totalExpectedLessons || 0}`,
-        RecordOfWorkSubmittedWeeks: checklist.recordOfWorkSubmittedWeeks || [],
-        HomeworkGiven: checklist.homeworkGiven || [],
-        Tests: {
-          Week5: checklist.testsGiven?.week5 ? "✅ Given" : "❌ Missing",
-          Week10: checklist.testsGiven?.week10 ? "✅ Given" : "❌ Missing",
-          EndOfTerm: checklist.testsGiven?.endOfTerm ? "✅ Given" : "❌ Missing",
-        },
-        MarkingKeysSubmitted: checklist.markingKeysSubmitted ? "✅ Submitted" : "❌ Missing",
-        ProgressChartUpdated: checklist.progressChartUpdated ? "✅ Updated" : "❌ Missing",
-        ResultAnalysisSubmitted: checklist.resultAnalysisSubmitted ? "✅ Submitted" : "❌ Missing",
-        ObservationInstrumentsSubmitted: checklist.observationInstrumentsSubmitted ? "✅ Submitted" : "❌ Missing",
-      },
-      LastUpdated: checklist.lastUpdated,
-    };
-
-    res.status(200).json(report);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };

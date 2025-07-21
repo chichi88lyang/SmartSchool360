@@ -22,6 +22,7 @@ const attendanceRoutes = require("./routes/attendanceRoutes");
 const pupilRoutes = require("./routes/pupilRoutes");
 const teacherDocumentRoutes = require("./routes/teacherDocumentRoutes");
 const pupilAttendanceRoutes = require("./routes/pupilAttendanceRoutes");
+const teacherActivityRoutes = require("./routes/teacherActivityRoutes");
 
 // ✅ Mount Routes
 app.use("/api/auth", authRoutes);
@@ -30,6 +31,7 @@ app.use("/api/pupils", pupilRoutes);
 app.use("/api/pupils", pupilAttendanceRoutes); // share base path with pupilRoutes
 app.use("/api/teacher-docs", teacherDocumentRoutes); // teacher documents routes mounted here
 app.use("/api/pupilresults", pupilResultRoutes);
+app.use("/api/teacher-activity", teacherActivityRoutes);
 
 // Test route
 app.get("/", (req, res) => res.send("API running"));
