@@ -1,11 +1,10 @@
 const express = require("express");
-
+const { getChecklistSummary, exportChecklist } = require("../controllers/teacherDocumentController");
 const auth = require("../middleware/auth");
-const { getChecklistSummary } = require("../controllers/teacherDocumentController");
-
-const router = express.Router();
-
-// ✅ Checklist Summary Route
-router.get("/summary", auth(), getChecklistSummary);
 //
+const router = express.Router();
+//
+router.get("/summary", auth(), getChecklistSummary);
+router.get("/export", auth(), exportChecklist);
+
 module.exports = router;
